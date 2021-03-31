@@ -1,0 +1,7 @@
+# IDEA
+.idea/
+*.iml
+
+# Node
+dist
+node_modules

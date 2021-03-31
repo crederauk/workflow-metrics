@@ -1,0 +1,21 @@
+{
+  "name": "github-metrication",
+  "version": "1.0.0",
+  "description": "A GitHub Action for uploading workflow statistics to Azure Monitor",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crederauk/github-metrication.git"
+  },
+  "bugs": {
+    "url": "https://github.com/crederauk/github-metrication/issues"
+  },
+  "homepage": "https://github.com/crederauk/github-metrication#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.6",
+    "jest": "^26.6.3"
+  }
+}

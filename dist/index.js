@@ -16,12 +16,12 @@ try {
     const token = core.getInput("token")
     const data = core.getInput("data")
 
-    const jobs = getJobs(data)
+    const jobs = getJobs(JSON.parse(data))
 
     const duration = getRunDuration(jobs, "seconds");
     const conclusion = getRunConclusion(jobs);
 
-    const workflowDuration = durationPoint("workflow-duration", {"conclusion": conclusion}, duration)
+    const workflowDuration = durationPoint("workflow-duration", { "conclusion": conclusion }, duration)
 
     const writeApi = createWriteApi(url, token, org, bucket)
     writePoint(writeApi, workflowDuration)

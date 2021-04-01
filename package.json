@@ -1,7 +1,7 @@
 {
   "name": "github-metrication",
   "version": "1.0.0",
-  "description": "A GitHub Action for uploading workflow statistics to Azure Monitor",
+  "description": "A GitHub Action for uploading workflow statistics to InfluxDB",
   "main": "index.js",
   "scripts": {
     "test": "jest"

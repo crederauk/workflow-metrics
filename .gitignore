@@ -3,7 +3,7 @@
 *.iml
 
 # Node
-dist
+
 node_modules
 
 # Logs

@@ -5,3 +5,6 @@
 # Node
 dist
 node_modules
+
+# Logs
+*.log

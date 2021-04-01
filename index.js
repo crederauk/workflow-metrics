@@ -1,19 +1,25 @@
-const core = require('@actions/core');
-const { getJobs, getRunDuration, getRunConclusion } = require("./parser");
-const { writePointToInflux } = require("./writeToInflux");
+const core = require("@actions/core");
+const { getJobs, getRunDuration, getRunConclusion } = require("./js/parser");
+const { createWriteApi, durationPoint, writePoint, flushWrites } = require("./js/writeToInflux");
 
-const fileName = process.argv.slice(2)[0];
-const runObject = JSON.parse(fileName);
-const jobs = getJobs(runObject);
-const duration = getRunDuration(jobs, "seconds");
-const conclusion = getRunConclusion(jobs);
+try {
+    const url = core.getInput("url")
+    const org = core.getInput("org")
+    const bucket = core.getInput("bucket")
+    const token = core.getInput("token")
+    const data = core.getInput("data")
 
-const token = process.env.INFLUX_TOKEN;
-const url = process.env.INFLUX_URL;
-const org = process.env.INFLUX_ORG;
-const bucket = process.env.INFLUX_BUCKET;
+    const jobs = getJobs(data)
 
-writePointToInflux(url, token, org, bucket, 's', conclusion, duration);
+    const duration = getRunDuration(jobs, "seconds");
+    const conclusion = getRunConclusion(jobs);
 
-console.log("Duration:", duration);
-console.log("Conclusion:", conclusion);
+    const workflowDuration = durationPoint("workflow-duration", {"conclusion": conclusion}, duration)
+
+    const writeApi = createWriteApi(url, token, org, bucket)
+    writePoint(writeApi, workflowDuration)
+    flushWrites(writeApi)
+
+} catch (error) {
+    core.setFailed(error.message);
+}

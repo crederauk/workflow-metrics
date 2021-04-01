@@ -22,8 +22,8 @@ inputs:
     description: "JSON data returned from the GitHub ' List jobs for a workflow run' endpoint"
     required: true
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: "node12"
+  main: "index.js"
 branding:
   icon: bar-chart-2
   color: blue

@@ -1,9 +1,22 @@
 name: "Parse and upload metrics"
-description: "Parses and uploads GitHub actions workflow metrics to Azure Monitor"
+description: "Parses and uploads GitHub actions workflow metrics to InfluxDB"
 author: "Credera UK"
 inputs:
   name:
     description: "Name of the workflow which 'data' relates to"
+    required: true
+  url:
+    description: "URL for your InfluxDB instance"
+    required: true
+  organisation:
+    description: "Organisation for InfluxDB"
+    required: true
+  bucket:
+    description: "Bucket for for InfluxDB"
+    required: false
+    default: "workflow"
+  token:
+    description: "Auth token for InfluxDB"
     required: true
   data:
     description: "JSON data returned from the GitHub ' List jobs for a workflow run' endpoint"

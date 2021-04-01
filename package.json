@@ -1,21 +1,25 @@
 {
-  "name": "github-metrication",
+  "name": "workflow-metrics",
   "version": "1.0.0",
-  "description": "A GitHub Action for uploading workflow statistics to Azure Monitor",
+  "description": "A GitHub Action for uploading workflow statistics to InfluxDB",
   "main": "index.js",
   "scripts": {
     "test": "jest"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/crederauk/github-metrication.git"
+    "url": "git+https://github.com/crederauk/workflow-metrics.git"
   },
   "bugs": {
-    "url": "https://github.com/crederauk/github-metrication/issues"
+    "url": "https://github.com/crederauk/workflow-metrics/issues"
   },
-  "homepage": "https://github.com/crederauk/github-metrication#readme",
+  "homepage": "https://github.com/crederauk/workflow-metrics#readme",
   "dependencies": {
     "@actions/core": "^1.2.6",
+    "@influxdata/influxdb-client": "^1.12.0",
+    "moment": "^2.29.1"
+  },
+  "devDependencies": {
     "jest": "^26.6.3"
   }
 }

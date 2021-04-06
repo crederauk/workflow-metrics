@@ -15,7 +15,7 @@ function getRunDuration(jobs, measurement = "seconds") {
 function getRunConclusion(jobs) {
     let finalConclusion = "success";
     for (let i = 0; i < jobs.length; i++) {
-        if (jobs[i]["conclusion"] == "failure") {
+        if (jobs[i]["conclusion"] === "failure") {
             finalConclusion = "failure";
         }
     }

@@ -1,5 +1,5 @@
 const core = require("@actions/core");
-const { getJobs, getRunDuration, getRunConclusion } = require("./js/parser");
+const { getJobs, getRunDuration, getRunConclusion, getJestDuration, getCypressDuration } = require("./js/parser");
 const { createWriteApi, durationPoint, writePoint, flushWrites } = require("./js/writeToInflux");
 
 try {
@@ -14,8 +14,10 @@ try {
 
     const duration = getRunDuration(jobs, "seconds");
     const conclusion = getRunConclusion(jobs);
+    const jestTestDuration = getJestDuration(jobs, conclusion, "seconds");
+    const cypressTestDuration = getCypressDuration(jobs, conclusion, "seconds");
 
-    const workflowDuration = durationPoint("workflow-duration", { "conclusion": conclusion, "workflow": workflowName }, duration)
+    const workflowDuration = durationPoint("workflow-duration", { "conclusion": conclusion, "workflow": workflowName }, duration, jestTestDuration, cypressTestDuration)
 
     const writeApi = createWriteApi(url, token, org, bucket)
     writePoint(writeApi, workflowDuration)

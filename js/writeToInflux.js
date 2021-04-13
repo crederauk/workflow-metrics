@@ -1,12 +1,14 @@
-const {InfluxDB, Point, HttpError} = require("@influxdata/influxdb-client")
+const { InfluxDB, Point, HttpError } = require("@influxdata/influxdb-client")
 
 function createWriteApi(url, token, org, bucket) {
-    return  new InfluxDB({ url, token }).getWriteApi(org, bucket)
+    return new InfluxDB({ url, token }).getWriteApi(org, bucket)
 }
 
-function durationPoint(name, tags, value) {
+function durationPoint(name, tags, duration, jestDuration, cypressDuration) {
     const point = new Point(name)
-        .intField("duration", value)
+        .intField("duration", duration)
+        .intField("jestDuration", jestDuration)
+        .intField("cypressDuration", cypressDuration)
     for (const tagName in tags) {
         if (tags.hasOwnProperty(tagName)) {
             point.tag(tagName, tags[tagName])

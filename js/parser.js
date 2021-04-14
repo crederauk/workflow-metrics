@@ -22,40 +22,23 @@ function getRunConclusion(jobs) {
     return finalConclusion;
 }
 
-function getJestDuration(jobs, runConclusion, measurement = "seconds") {
-    let jestDuration = 0;
-    if (runConclusion === "success") {
-        for (let i = 0; i < jobs.length; i++) {
-            if (jobs[i]["name"].toLowerCase().includes("unit")) {
-                for (let j = 0; j < jobs[i]["steps"].length; j++) {
-                    if (jobs[i]["steps"][j]["name"].toLowerCase().includes("run")) {
-                        jestDuration = moment(jobs[i]["steps"][j]["completed_at"]).diff(moment(jobs[i]["steps"][j]["started_at"]), measurement)
-                    }
+function getStepsDuration(jobs, measurement = "seconds") {
+
+    const stepsToAvoid = ["Set up job", "Run actions/checkout@v2", "Post Run actions/checkout@v2", "Complete job"]
+    let listOfSteps = [];
+    for (let i = 0; i < jobs.length; i++) {
+        for (let j = 0; j < jobs[i]["steps"].length; j++) {
+            if (stepsToAvoid.includes(jobs[i]["steps"][j]["name"]) == false) {
+                let stepObj = {
+                    "name": jobs[i]["steps"][j]["name"],
+                    "conclusion": jobs[i]["steps"][j]["conclusion"],
+                    "duration": moment(jobs[i]["steps"][j]["completed_at"]).diff(moment(jobs[i]["steps"][j]["started_at"]), measurement)
                 }
+                listOfSteps.push(stepObj)
             }
         }
-    } else {
-        return jestDuration
     }
-    return jestDuration;
+    return listOfSteps;
 }
 
-function getCypressDuration(jobs, runConclusion, measurement = "seconds") {
-    let cypressDuration = 0;
-    if (runConclusion === "success") {
-        for (let i = 0; i < jobs.length; i++) {
-            if (jobs[i]["name"].toLowerCase().includes("e2e")) {
-                for (let j = 0; j < jobs[i]["steps"].length; j++) {
-                    if (jobs[i]["steps"][j]["name"].toLowerCase().includes("run")) {
-                        cypressDuration = moment(jobs[i]["steps"][j]["completed_at"]).diff(moment(jobs[i]["steps"][j]["started_at"]), measurement)
-                    }
-                }
-            }
-        }
-    } else {
-        return cypressDuration;
-    }
-    return cypressDuration;
-}
-
-module.exports = { getJobs, getRunDuration, getRunConclusion, getJestDuration, getCypressDuration }
+module.exports = { getJobs, getRunDuration, getRunConclusion, getStepsDuration }

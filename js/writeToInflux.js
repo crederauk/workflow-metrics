@@ -4,11 +4,9 @@ function createWriteApi(url, token, org, bucket) {
     return new InfluxDB({ url, token }).getWriteApi(org, bucket)
 }
 
-function durationPoint(name, tags, duration, jestDuration, cypressDuration) {
+function durationPoint(name, tags, value) {
     const point = new Point(name)
-        .intField("duration", duration)
-        .intField("jestDuration", jestDuration)
-        .intField("cypressDuration", cypressDuration)
+        .intField("duration", value)
     for (const tagName in tags) {
         if (tags.hasOwnProperty(tagName)) {
             point.tag(tagName, tags[tagName])

@@ -20,6 +20,7 @@ try {
 
     const writeApi = createWriteApi(url, token, org, bucket)
     writePoint(writeApi, workflowDuration)
+    flushWrites(writeApi)
 
     for (let i = 0; i < stepsDuration.length; i++) {
         let stepDuration = durationPoint("step-duration", { "step": stepsDuration[i]["name"], "conclusion": stepsDuration[i]["conclusion"] }, stepsDuration[i]["duration"])

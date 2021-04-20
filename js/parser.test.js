@@ -51,7 +51,7 @@ describe("Workflow json parser", function () {
                 "duration": 10
             }])
         })
-        test("Multiple step success", () => {
+        test("Multiple step failure", () => {
             expect(parser.getStepsDuration(multipleJobWorkflow["jobs"])).toMatchObject([{
                 "name": "Job 1 Step 1",
                 "conclusion": "success",

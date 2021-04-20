@@ -24,18 +24,15 @@ function getRunConclusion(jobs) {
 
 function getStepsDuration(jobs, measurement = "seconds") {
 
-    const stepsToAvoid = ["Set up job", "Run actions/checkout@v2", "Post Run actions/checkout@v2", "Complete job"]
     let listOfSteps = [];
     for (let i = 0; i < jobs.length; i++) {
         for (let j = 0; j < jobs[i]["steps"].length; j++) {
-            if (stepsToAvoid.includes(jobs[i]["steps"][j]["name"]) == false) {
-                let stepObj = {
-                    "name": jobs[i]["steps"][j]["name"],
-                    "conclusion": jobs[i]["steps"][j]["conclusion"],
-                    "duration": moment(jobs[i]["steps"][j]["completed_at"]).diff(moment(jobs[i]["steps"][j]["started_at"]), measurement)
-                }
-                listOfSteps.push(stepObj)
+            let stepObj = {
+                "name": jobs[i]["steps"][j]["name"],
+                "conclusion": jobs[i]["steps"][j]["conclusion"],
+                "duration": moment(jobs[i]["steps"][j]["completed_at"]).diff(moment(jobs[i]["steps"][j]["started_at"]), measurement)
             }
+            listOfSteps.push(stepObj)
         }
     }
     return listOfSteps;

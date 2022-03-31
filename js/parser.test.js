@@ -42,6 +42,28 @@ describe("Workflow json parser", function () {
             expect(parser.getRunConclusion(input["jobs"])).toBe("failure")
         })
     })
+
+    describe("Run Step Summary", function () {
+        test("Single step success", () => {
+            expect(parser.getStepsDuration(singleJobWorkflow["jobs"])).toMatchObject([{
+                "name": "Job 1 Step 1",
+                "conclusion": "success",
+                "duration": 10
+            }])
+        })
+        test("Multiple step failure", () => {
+            expect(parser.getStepsDuration(multipleJobWorkflow["jobs"])).toMatchObject([{
+                "name": "Job 1 Step 1",
+                "conclusion": "success",
+                "duration": 10
+            },
+            {
+                "name": "Job 2 Step 1",
+                "conclusion": "failure",
+                "duration": 15
+            }])
+        })
+    })
 })
 
 function workflowJson(jobs) {

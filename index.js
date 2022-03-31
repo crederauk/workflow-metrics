@@ -1,5 +1,5 @@
 const core = require("@actions/core");
-const { getJobs, getRunDuration, getRunConclusion } = require("./js/parser");
+const { getJobs, getRunDuration, getRunConclusion, getStepsDuration } = require("./js/parser");
 const { createWriteApi, durationPoint, writePoint, flushWrites } = require("./js/writeToInflux");
 
 try {
@@ -14,11 +14,19 @@ try {
 
     const duration = getRunDuration(jobs, "seconds");
     const conclusion = getRunConclusion(jobs);
+    const stepsDuration = getStepsDuration(jobs, "seconds");
 
     const workflowDuration = durationPoint("workflow-duration", { "conclusion": conclusion, "workflow": workflowName }, duration)
 
     const writeApi = createWriteApi(url, token, org, bucket)
     writePoint(writeApi, workflowDuration)
+    flushWrites(writeApi)
+
+    for (let i = 0; i < stepsDuration.length; i++) {
+        let stepDuration = durationPoint("step-duration", { "step": stepsDuration[i]["name"], "conclusion": stepsDuration[i]["conclusion"] }, stepsDuration[i]["duration"])
+        writePoint(writeApi, stepDuration)
+    }
+
     flushWrites(writeApi)
 
 } catch (error) {

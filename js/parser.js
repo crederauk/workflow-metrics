@@ -22,4 +22,20 @@ function getRunConclusion(jobs) {
     return finalConclusion;
 }
 
-module.exports = { getJobs, getRunDuration, getRunConclusion }
+function getStepsDuration(jobs, measurement = "seconds") {
+
+    let listOfSteps = [];
+    for (let i = 0; i < jobs.length; i++) {
+        for (let j = 0; j < jobs[i]["steps"].length; j++) {
+            let stepObj = {
+                "name": jobs[i]["steps"][j]["name"],
+                "conclusion": jobs[i]["steps"][j]["conclusion"],
+                "duration": moment(jobs[i]["steps"][j]["completed_at"]).diff(moment(jobs[i]["steps"][j]["started_at"]), measurement)
+            }
+            listOfSteps.push(stepObj)
+        }
+    }
+    return listOfSteps;
+}
+
+module.exports = { getJobs, getRunDuration, getRunConclusion, getStepsDuration }

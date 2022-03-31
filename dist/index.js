@@ -1,44 +1,10 @@
-require('./sourcemap-register.js');module.exports =
-/******/ (() => { // webpackBootstrap
+require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 242:
-/***/ ((__unused_webpack_module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const core = __nccwpck_require__(102);
-const { getJobs, getRunDuration, getRunConclusion } = __nccwpck_require__(840);
-const { createWriteApi, durationPoint, writePoint, flushWrites } = __nccwpck_require__(614);
-
-try {
-    const workflowName = core.getInput("name")
-    const url = core.getInput("url")
-    const org = core.getInput("org")
-    const bucket = core.getInput("bucket")
-    const token = core.getInput("token")
-    const data = core.getInput("data")
-
-    const jobs = getJobs(JSON.parse(data))
-
-    const duration = getRunDuration(jobs, "seconds");
-    const conclusion = getRunConclusion(jobs);
-
-    const workflowDuration = durationPoint("workflow-duration", { "conclusion": conclusion, "workflow": workflowName }, duration)
-
-    const writeApi = createWriteApi(url, token, org, bucket)
-    writePoint(writeApi, workflowDuration)
-    flushWrites(writeApi)
-
-} catch (error) {
-    core.setFailed(error.message);
-}
-
-
-/***/ }),
-
-/***/ 840:
+/***/ 945:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const moment = __nccwpck_require__(803);
+const moment = __nccwpck_require__(623);
 
 function getJobs(runObject) {
     return runObject["jobs"];
@@ -62,18 +28,35 @@ function getRunConclusion(jobs) {
     return finalConclusion;
 }
 
-module.exports = { getJobs, getRunDuration, getRunConclusion }
+function getStepsDuration(jobs, measurement = "seconds") {
+
+    let listOfSteps = [];
+    for (let i = 0; i < jobs.length; i++) {
+        for (let j = 0; j < jobs[i]["steps"].length; j++) {
+            let stepObj = {
+                "name": jobs[i]["steps"][j]["name"],
+                "conclusion": jobs[i]["steps"][j]["conclusion"],
+                "duration": moment(jobs[i]["steps"][j]["completed_at"]).diff(moment(jobs[i]["steps"][j]["started_at"]), measurement)
+            }
+            listOfSteps.push(stepObj)
+        }
+    }
+    return listOfSteps;
+}
+
+module.exports = { getJobs, getRunDuration, getRunConclusion, getStepsDuration }
 
 
 /***/ }),
 
-/***/ 614:
+/***/ 715:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const {InfluxDB, Point, HttpError} = __nccwpck_require__(471)
+const { InfluxDB, Point, HttpError } = __nccwpck_require__(659)
+const core = __nccwpck_require__(186);
 
 function createWriteApi(url, token, org, bucket) {
-    return  new InfluxDB({ url, token }).getWriteApi(org, bucket)
+    return new InfluxDB({ url, token }).getWriteApi(org, bucket)
 }
 
 function durationPoint(name, tags, value) {
@@ -98,6 +81,7 @@ function flushWrites(writeApi) {
             console.log("Point written successfully.")
         })
         .catch(e => {
+            core.error(`Error ${e}`);
             console.error(e)
             if (e instanceof HttpError && e.statusCode === 401) {
                 console.log("Setup a new InfluxDB database.")
@@ -111,7 +95,7 @@ module.exports = { createWriteApi, durationPoint, writePoint, flushWrites }
 
 /***/ }),
 
-/***/ 639:
+/***/ 351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -125,7 +109,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const os = __importStar(__nccwpck_require__(87));
-const utils_1 = __nccwpck_require__(985);
+const utils_1 = __nccwpck_require__(278);
 /**
  * Commands
  *
@@ -197,7 +181,7 @@ function escapeProperty(s) {
 
 /***/ }),
 
-/***/ 102:
+/***/ 186:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -219,9 +203,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const command_1 = __nccwpck_require__(639);
-const file_command_1 = __nccwpck_require__(545);
-const utils_1 = __nccwpck_require__(985);
+const command_1 = __nccwpck_require__(351);
+const file_command_1 = __nccwpck_require__(717);
+const utils_1 = __nccwpck_require__(278);
 const os = __importStar(__nccwpck_require__(87));
 const path = __importStar(__nccwpck_require__(622));
 /**
@@ -442,7 +426,7 @@ exports.getState = getState;
 
 /***/ }),
 
-/***/ 545:
+/***/ 717:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -460,7 +444,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const fs = __importStar(__nccwpck_require__(747));
 const os = __importStar(__nccwpck_require__(87));
-const utils_1 = __nccwpck_require__(985);
+const utils_1 = __nccwpck_require__(278);
 function issueCommand(command, message) {
     const filePath = process.env[`GITHUB_${command}`];
     if (!filePath) {
@@ -478,7 +462,7 @@ exports.issueCommand = issueCommand;
 
 /***/ }),
 
-/***/ 985:
+/***/ 278:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -504,7 +488,7 @@ exports.toCommandValue = toCommandValue;
 
 /***/ }),
 
-/***/ 471:
+/***/ 659:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -529,7 +513,7 @@ function K(t,e,r,s){return new(r||(r=Promise))((function(n,i){function o(t){try{
 
 /***/ }),
 
-/***/ 803:
+/***/ 623:
 /***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
 
 /* module decorator */ module = __nccwpck_require__.nmd(module);
@@ -6278,8 +6262,9 @@ module.exports = require("zlib");;
 /******/ 	// The require function
 /******/ 	function __nccwpck_require__(moduleId) {
 /******/ 		// Check if module is in cache
-/******/ 		if(__webpack_module_cache__[moduleId]) {
-/******/ 			return __webpack_module_cache__[moduleId].exports;
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = __webpack_module_cache__[moduleId] = {
@@ -6316,11 +6301,48 @@ module.exports = require("zlib");;
 /******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
-/******/ 	__nccwpck_require__.ab = __dirname + "/";/************************************************************************/
-/******/ 	// module exports must be returned from runtime so entry inlining is disabled
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	return __nccwpck_require__(242);
+/******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
+const core = __nccwpck_require__(186);
+const { getJobs, getRunDuration, getRunConclusion, getStepsDuration } = __nccwpck_require__(945);
+const { createWriteApi, durationPoint, writePoint, flushWrites } = __nccwpck_require__(715);
+
+try {
+    const workflowName = core.getInput("name")
+    const url = core.getInput("url")
+    const org = core.getInput("org")
+    const bucket = core.getInput("bucket")
+    const token = core.getInput("token")
+    const data = core.getInput("data")
+
+    const jobs = getJobs(JSON.parse(data))
+
+    const duration = getRunDuration(jobs, "seconds");
+    const conclusion = getRunConclusion(jobs);
+    const stepsDuration = getStepsDuration(jobs, "seconds");
+
+    const workflowDuration = durationPoint("workflow-duration", { "conclusion": conclusion, "workflow": workflowName }, duration)
+
+    const writeApi = createWriteApi(url, token, org, bucket)
+    writePoint(writeApi, workflowDuration)
+    flushWrites(writeApi)
+
+    for (let i = 0; i < stepsDuration.length; i++) {
+        let stepDuration = durationPoint("step-duration", { "step": stepsDuration[i]["name"], "conclusion": stepsDuration[i]["conclusion"] }, stepsDuration[i]["duration"])
+        writePoint(writeApi, stepDuration)
+    }
+
+    flushWrites(writeApi)
+
+} catch (error) {
+    core.setFailed(error.message);
+}
+
+})();
+
+module.exports = __webpack_exports__;
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map
